@@ -1,1 +1,1 @@
-# FScript
+# 📜 FScript
