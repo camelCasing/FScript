@@ -1,0 +1,70 @@
+try:
+    variables = {}
+
+    def executeStatement(statement):
+        global variables
+
+        tokens = statement.strip().split()
+
+        if tokens[0] == "while":
+            while executeExpression(tokens[1]):
+                for substatement in tokens[2:]:
+                    executeStatement(substatement)
+        elif tokens[0] == "if":
+            if executeExpression(tokens[1]):
+                for substatement in tokens[2:]:
+                    executeStatement(substatement)
+        elif tokens[0] == "void":
+            functionName = tokens[1]
+            functionArguments = tokens[2:-1]
+            functionBody = tokens[-1]
+            variables[functionName] = {"args": functionArguments, "body": functionBody}
+        elif tokens[0] == "return":
+            return executeExpression(tokens[1])
+        elif tokens[0] == "input":
+            variableName = tokens[1]
+            value = input()
+            variables[variableName] = value
+        elif tokens[0] == "print":
+            output = " ".join([executeExpression(token) for token in tokens[1:]])
+            print(output)
+        elif "=" in statement:
+            variableName, value = statement.split("=")
+            variables[variableName.strip()] = executeExpression(value.strip())
+        else:
+            raise ValueError(f"Invalid statement: {statement}")
+
+    # Define a function to execute expressions
+    def executeExpression(expression):
+        global variables
+        if expression in variables:
+            return variables[expression]
+        elif expression.isdigit():
+            return int(expression)
+        elif "+" in expression:
+            operands = expression.split("+")
+            return sum([executeExpression(operand) for operand in operands])
+        else:
+            raise ValueError(f"Invalid expression: {expression}")
+
+    # Define a function to parse and execute a script
+    def executeScript(script):
+        global variables
+        for line in script.split("\n"):
+            line = line.strip()
+            if line.startswith("//"):
+                continue
+            elif line == "":
+                continue
+            else:
+                executeStatement(line)
+
+    # Example usage:
+
+    scriptFile = open(input(), "r")
+    script = scriptFile.read()
+    scriptFile.close()
+
+    executeScript(script)
+except:
+    pass
